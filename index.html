@@ -1,63 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>ALVIN AI</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f4f9; }
-        .buttons { margin-bottom: 20px; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; border: none; background: #007bff; color: white; border-radius: 5px; }
-        .synergy-btn { background: #28a745 !important; }
-        #chat-area { width: 90%; max-width: 600px; margin: 0 auto; height: 300px; border: 1px solid #ccc; background: white; padding: 10px; overflow-y: scroll; text-align: left; }
-    </style>
-</head>
+<head><title>ALVIN AI</title></head>
 <body>
-
     <h1>ALVIN</h1>
-
     <div class="buttons">
-        <button onclick="setMode('gemini')">Gemini AI</button>
-        <button onclick="setMode('huggingface')">Hugging Face</button>
-        <button onclick="setMode('groq')">Groq AI</button>
-        <br>
-        <button class="synergy-btn" onclick="setMode('synergy')">Synergy (All)</button>
+        <button onclick="askAI('gemini')">Ask Gemini</button>
+        <button onclick="askAI('groq')">Ask Groq</button>
     </div>
-
-    <div id="chat-area">
-        <p><i>System: Mode set to Gemini. Ready to chat!</i></p>
-    </div>
-
-    <div id="input-area" style="margin-top: 10px;">
-        <input type="text" id="user-input" placeholder="Type your question here...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-
+    <div id="chat-area" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px;"></div>
+    <input type="text" id="user-input" placeholder="Type here...">
     <script>
-        let currentMode = 'gemini';
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('chat-area').innerHTML = `<p><i>System: Mode switched to ${mode.toUpperCase()}</i></p>`;
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('user-input');
-            const chatArea = document.getElementById('chat-area');
-            const prompt = input.value;
-
-            if (prompt.trim() === "") return;
-
-            chatArea.innerHTML += `<p><b>You:</b> ${prompt}</p>`;
-            chatArea.innerHTML += `<p><i>ALVIN is thinking using ${currentMode}...</i></p>`;
-            
-            input.value = '';
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
         async function askAI(mode) {
-        const chatArea = document.getElementById('chat-area');
-        chatArea.innerHTML += `<p><i>ALVIN is thinking using ${mode}...</i></p>`;
-        
-        // This is a direct test to see if your button works
-        alert("Button pressed! The AI bridge is ready to be connected.");
+            const prompt = document.getElementById('user-input').value;
+            const chatArea = document.getElementById('chat-area');
+            chatArea.innerHTML += `<p><b>You:</b> ${prompt}</p>`;
+            
+            try {
+                const response = await fetch('/.netlify/functions/ask-ai', {
+                    method: 'POST',
+                    body: JSON.stringify({ prompt, mode })
+                });
+                const data = await response.json();
+                chatArea.innerHTML += `<p><b>ALVIN (${mode}):</b> ${data.message}</p>`;
+            } catch (e) {
+                chatArea.innerHTML += `<p style="color:red;">Error connecting to AI bridge.</p>`;
+            }
         }
     </script>
 </body>

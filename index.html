@@ -52,6 +52,13 @@
             input.value = '';
             chatArea.scrollTop = chatArea.scrollHeight;
         }
+        async function askAI(mode) {
+        const chatArea = document.getElementById('chat-area');
+        chatArea.innerHTML += `<p><i>ALVIN is thinking using ${mode}...</i></p>`;
+        
+        // This is a direct test to see if your button works
+        alert("Button pressed! The AI bridge is ready to be connected.");
+        }
     </script>
 </body>
 </html>
